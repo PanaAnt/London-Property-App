@@ -355,111 +355,57 @@ def show_average_rent():
     folium_static(m)
 
 # Section 6: RightMove Web Scraper
-def show_rightmove_web_scraper():
-    st.title("RightMove **LIVE** Properties up for rent :mag_right:")
-    st.write("This tool is only intended to provide a quick insight into the typical rents that are within the London Borough/area you wish to see. This is **NOT** a replacement to help with property searching as the website 'Right Move' is much better suited for a more detailed search/investigation into properties if that is what you are after.")
+def fetch_rightmove_data(location):
+    url = f"https://www.rightmove.co.uk/property-to-rent/{location}.html"
+    response = requests.get(url)
+    if response.status_code != 200:
+        st.error("Failed to retrieve data. Please check the location or try again later.")
+        return None
+    
+    soup = BeautifulSoup(response.content, "html.parser")
+    rent_values = []
+    addresses = []
+    property_types = []
+    bedrooms = []
 
-    def validate_link(url):
-        driver.get(url)
-        time.sleep(5)
-        if "Sorry, we can't find the page you were looking for" in driver.page_source:
-            return False
-        return True
-
-    def scrape_page(soup):
-        rent_values = []
-        addresses = []
-        property_types = []
-        bedrooms = []
-
-        rents = soup.find_all('div', class_='propertyCard-rentalPrice-primary')
-        for rent in rents:
+    for card in soup.find_all('div', class_='propertyCard'):
+        rent = card.find('div', class_='propertyCard-rentalPrice-primary')
+        if rent:
             rent_values.append(rent.text.strip())
 
-        address_tags = soup.find_all('address', class_='propertyCard-address')
-        for address in address_tags:
+        address = card.find('address', class_='propertyCard-address')
+        if address:
             addresses.append(address.get('title'))
-
-        properties = soup.find_all('div', class_='property-information')
-        for property in properties:
-            property_type = property.find('span', class_='text').text
+        
+        property_info = card.find('div', class_='property-information')
+        if property_info:
+            property_type = property_info.find('span', class_='text').text
             property_types.append(property_type)
             
-            bedroom_element = property.find('span', class_='no-svg-bed-icon')
-            if bedroom_element:
-                bedroom = bedroom_element.find_next('span', class_='text').text
+            bedroom = property_info.find('span', class_='no-svg-bed-icon')
+            if bedroom:
+                bedrooms.append(bedroom.find_next('span', class_='text').text)
             else:
-                bedroom = "N/A"
-            bedrooms.append(bedroom)
+                bedrooms.append("N/A")
+    
+    data = pd.DataFrame({
+        'Rent': rent_values,
+        'Address': addresses,
+        'Property Type': property_types,
+        'Bedrooms': bedrooms
+    })
+    
+    return data
 
-        return rent_values, addresses, property_types, bedrooms
-    #added chrome options so when the user inputs the borough, it runs in the background and the window(s) will NOT be visible making the process look smoother and hiding the scraping process
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--window-size=1920x1080")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
+# Use in Streamlit
+st.title("RightMove **LIVE** Properties up for rent :mag_right:")
 
-    service = Service(r"C:\Users\P-DTC1\Downloads\chromedriver-win64\chromedriver.exe")
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+location_input = st.text_input("Enter the London Borough you want to search (may take some time):")
 
-    if 'location' not in st.session_state:
-        st.session_state['location'] = ""
-    if 'data' not in st.session_state:
-        st.session_state['data'] = pd.DataFrame()
-    if 'page_number' not in st.session_state:
-        st.session_state['page_number'] = 0
-    if 'valid' not in st.session_state:
-        st.session_state['valid'] = True
-
-    location_input = st.text_input("Enter the London Borough you want to search (may take some time):")
-
-    if st.button("Search"):
-        if location_input and location_input != st.session_state['location']:
-            st.session_state['location'] = location_input.strip()
-            st.session_state['data'] = pd.DataFrame()
-            st.session_state['page_number'] = 0
-            st.session_state['valid'] = validate_link(f"https://www.rightmove.co.uk/property-to-rent/{st.session_state['location']}.html")
-
-        if st.session_state['valid']:
-            with st.spinner("Extracting information, please wait..."):
-                base_url = f"https://www.rightmove.co.uk/property-to-rent/{st.session_state['location']}.html"
-
-                if st.session_state['page_number'] >= 0:
-                    while True:
-                        page_url = f"{base_url}?index={st.session_state['page_number'] * 24}"
-                        driver.get(page_url)
-                        time.sleep(1)
-                        page_source = driver.page_source
-
-                        soup = BeautifulSoup(page_source, 'html.parser')
-
-                        rent_values, addresses, property_types, bedrooms = scrape_page(soup)
-
-                        if not rent_values:
-                            st.session_state['page_number'] = -1
-                            break
-
-                        new_data = pd.DataFrame({
-                            'Rent': rent_values,
-                            'Address': addresses,
-                            'Property Type': property_types,
-                            'Bedrooms': bedrooms
-                        })
-                        st.session_state['data'] = pd.concat([st.session_state['data'], new_data], ignore_index=True)
-
-                        st.session_state['page_number'] += 1
-
-                driver.quit()
-
-    if not st.session_state['data'].empty:
-        st.subheader(f"Table of Rents in {st.session_state['location']}")
-        st.dataframe(st.session_state['data'], width=590, height=1190)
-    elif st.session_state['valid'] is False:
-        st.error("Invalid location or link. Please try again with a different location.")
-    else:
-        st.info("Enter a location and click search to see results.")
+if st.button("Search"):
+    data = fetch_rightmove_data(location_input)
+    if data is not None:
+        st.dataframe(data)
 
 #SIDEBAR CONTINUED
 # Content will be displayed depending on which section the user selects adding a cleaner view to look at specific sections
