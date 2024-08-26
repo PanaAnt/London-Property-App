@@ -1,0 +1,15 @@
+streamlit
+scikit-learn
+pandas
+matplotlib
+selenium
+beautifulsoup4
+geopandas
+prophet
+folium
+streamlit
+json
+time
+math
+re 
+requests

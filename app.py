@@ -361,12 +361,6 @@ def show_rightmove_web_scraper():
     st.title("RightMove **LIVE** Properties up for rent :mag_right:")
     st.write("This tool is only intended to provide a quick insight into the typical rents that are within the London Borough/area you wish to see. This is **NOT** a replacement to help with property searching as the website 'Right Move' is much better suited for a more detailed search/investigation into properties if that is what you are after.")
 
-    from bs4 import BeautifulSoup
-    from selenium import webdriver
-    from selenium.webdriver.chrome.service import Service
-    from selenium.webdriver.chrome.options import Options
-    import time
-
     def validate_link(url):
         driver.get(url)
         time.sleep(5)
