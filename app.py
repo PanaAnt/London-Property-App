@@ -322,7 +322,16 @@ def show_average_rent():
 
 # Section 6: RightMove Web Scraper
 
-# Added chrome options so when the user inputs the borough, it runs in the background
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager  # Add this import
+import streamlit as st
+import pandas as pd
+import time
+from bs4 import BeautifulSoup
+
+# Chrome options setup
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-gpu")
