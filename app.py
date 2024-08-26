@@ -35,7 +35,7 @@ st.title(" **London Property Tool**:house_with_garden::hammer_and_wrench:")
 st.divider()
 st.subheader("About the tool")
 st.write("This tool is **NOT** offering financial advice **AT ALL**. It is a tool that aims to provide insights into the current London property market with a focus on analysing the different Boroughs within the city. The implementation of the Buy-To-Let Calculator is due to my personal interest of investing into property in the future and combining that with visuals and a LIVE data source provides me with a significant level of information for insights into potential investment areas. For the ***user***, it could also produce meaningful insights for you as well.")
-file = os.path.join('data', 'UK-HPI-full-file-2024-06.csv')
+file = 'data/UK-HPI-full-file-2024-06.csv'
 df = pd.read_csv(file)
 
 # List of London Boroughs
