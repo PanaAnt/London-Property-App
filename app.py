@@ -18,6 +18,8 @@ import folium
 from streamlit_folium import folium_static
 import geopandas as gpd
 import json
+import chromedriver_autoinstaller
+chromedriver_autoinstaller.install()
 # Redefining np.float_ to np.float64 since prophet does not work well with np.float
 np.float_ = np.float64
 from prophet import Prophet
