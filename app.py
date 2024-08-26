@@ -341,7 +341,10 @@ chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 
 def get_driver():
-    chromedriver_autoinstaller.install()  # Automatically installs the correct version
+    # Specify a temporary directory for ChromeDriver installation
+    temp_dir = tempfile.gettempdir()
+    chromedriver_autoinstaller.install(path=temp_dir)
+    
     driver = webdriver.Chrome(options=chrome_options)
     return driver
 
