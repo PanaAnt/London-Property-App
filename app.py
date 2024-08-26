@@ -397,23 +397,36 @@ def fetch_rightmove_data(location):
     
     return data
 
-# Use in Streamlit
-st.title("RightMove **LIVE** Properties up for rent :mag_right:")
+# Function to display RightMove data in Streamlit
+def show_rightmove_web_scraper():
+    st.title("RightMove **LIVE** Properties up for rent :mag_right:")
 
-location_input = st.text_input("Enter the London Borough you want to search (may take some time):")
+    location_input = st.text_input("Enter the London Borough you want to search (may take some time):")
 
-if st.button("Search"):
-    data = fetch_rightmove_data(location_input)
-    if data is not None:
-        st.dataframe(data)
+    if st.button("Search"):
+        data = fetch_rightmove_data(location_input)
+        if data is not None:
+            st.dataframe(data)
 
-#SIDEBAR CONTINUED
-# Content will be displayed depending on which section the user selects adding a cleaner view to look at specific sections
+# Sidebar Navigation
+st.sidebar.title("Navigation")
+sections = [
+    "Home",
+    "Property Prices & Sales Volume", 
+    "House Price Predictions", 
+    "Forecast Metrics", 
+    "Buy-To-Let Mortgage Calculator", 
+    "Average Rent & Map", 
+    "RightMove **LIVE** Rents Up for Sale"
+]
+selected_section = st.sidebar.radio("Go to:", sections)
+
+# Content will be displayed depending on which section the user selects
 if selected_section == "Property Prices & Sales Volume":
     show_property_prices_sales_volume()
 elif selected_section == "House Price Predictions":
     show_house_price_predictions()
-elif selected_section == "Forecast Metrics of House Predictions":
+elif selected_section == "Forecast Metrics":
     show_forecast_metrics()
 elif selected_section == "Buy-To-Let Mortgage Calculator":
     show_buy_to_let_mortgage_calculator()
@@ -434,5 +447,4 @@ elif selected_section == "Home":
     show_average_rent()
     st.divider()
     show_rightmove_web_scraper()
-
 #WEB FEATURES SECTION (MAYBE)
