@@ -371,7 +371,7 @@ chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 
 def get_driver():
-    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options))
+    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
 if 'location' not in st.session_state:
     st.session_state['location'] = "drivers//chromedriver.exe"
