@@ -408,19 +408,6 @@ def show_rightmove_web_scraper():
         if data is not None:
             st.dataframe(data)
 
-# Sidebar Navigation
-st.sidebar.title("Navigation")
-sections = [
-    "Home",
-    "Property Prices & Sales Volume", 
-    "House Price Predictions", 
-    "Forecast Metrics", 
-    "Buy-To-Let Mortgage Calculator", 
-    "Average Rent & Map", 
-    "RightMove **LIVE** Rents Up for Sale"
-]
-selected_section = st.sidebar.radio("Go to:", sections)
-
 # Content will be displayed depending on which section the user selects
 if selected_section == "Property Prices & Sales Volume":
     show_property_prices_sales_volume()
