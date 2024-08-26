@@ -355,46 +355,52 @@ def show_average_rent():
     folium_static(m)
 
 # Section 6: RightMove Web Scraper
-def fetch_rightmove_data(location):
-    url = f"https://www.rightmove.co.uk/property-to-rent/{location}.html"
-    response = requests.get(url)
-    if response.status_code != 200:
-        st.error("Failed to retrieve data. Please check the location or try again later.")
-        return None
-    
-    soup = BeautifulSoup(response.content, "html.parser")
+def fetch_rightmove_data(location, max_pages=5):
+    base_url = f"https://www.rightmove.co.uk/property-to-rent/{location}.html"
     rent_values = []
     addresses = []
     property_types = []
     bedrooms = []
 
-    for card in soup.find_all('div', class_='propertyCard'):
-        rent = card.find('div', class_='propertyCard-rentalPrice-primary')
-        if rent:
-            rent_values.append(rent.text.strip())
-        else:
-            rent_values.append(None)  # Append None if no rent value is found
+    for page in range(0, max_pages * 24, 24):  # RightMove uses increments of 24 for pagination
+        url = f"{base_url}?index={page}"
+        response = requests.get(url)
+        if response.status_code != 200:
+            st.error("Failed to retrieve data. Please check the location or try again later.")
+            break
 
-        address = card.find('address', class_='propertyCard-address')
-        if address:
-            addresses.append(address.get('title'))
-        else:
-            addresses.append(None)  # Append None if no address is found
-        
-        property_info = card.find('div', class_='property-information')
-        if property_info:
-            property_type = property_info.find('span', class_='text').text
-            property_types.append(property_type)
-            
-            bedroom = property_info.find('span', class_='no-svg-bed-icon')
-            if bedroom:
-                bedrooms.append(bedroom.find_next('span', class_='text').text)
+        soup = BeautifulSoup(response.content, "html.parser")
+        cards = soup.find_all('div', class_='l-searchResult')
+
+        if not cards:
+            break  # If no more results, break the loop
+
+        for card in cards:
+            # Rent
+            rent = card.find('div', class_='propertyCard-rentalPrice-primary')
+            rent_values.append(rent.text.strip() if rent else None)
+
+            # Address
+            address = card.find('address', class_='propertyCard-address')
+            addresses.append(address.get('title') if address else None)
+
+            # Property Type
+            property_info = card.find('div', class_='property-information')
+            if property_info:
+                property_type = property_info.find('span', class_='propertyCard-title').text
+                property_types.append(property_type.strip() if property_type else None)
             else:
-                bedrooms.append("N/A")
-        else:
-            property_types.append(None)  # Append None if no property type is found
-            bedrooms.append(None)        # Append None if no bedroom info is found
-    
+                property_types.append(None)
+
+            # Bedrooms
+            bedroom_info = card.find('span', class_='propertyCard-title')
+            if bedroom_info:
+                # Extracting bedroom count from text, typically found in the title or description
+                bedroom_match = re.search(r'(\d+)\s*bedroom', bedroom_info.text, re.IGNORECASE)
+                bedrooms.append(bedroom_match.group(1) if bedroom_match else "N/A")
+            else:
+                bedrooms.append(None)
+
     # Ensure all lists have the same length
     max_length = max(len(rent_values), len(addresses), len(property_types), len(bedrooms))
 
