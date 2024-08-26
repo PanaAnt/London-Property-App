@@ -29,14 +29,13 @@ from prophet import Prophet
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_colwidth', None)
 pd.set_option('display.expand_frame_repr', False)
+def show_home():
+    st.title("**London Property Tool**:house_with_garden::hammer_and_wrench:")
+    st.divider()
+    st.subheader("About the tool")
+    st.write("This tool is **NOT** offering financial advice **AT ALL**. It is a tool that aims to provide insights into the current London property market with a focus on analysing the different Boroughs within the city. The implementation of the Buy-To-Let Calculator is due to my personal interest of investing into property in the future and combining that with visuals and a LIVE data source provides me with a significant level of information for insights into potential investment areas. For the ***user***, it could also produce meaningful insights for you as well.")
 
-st.title("**London Property Tool**:house_with_garden::hammer_and_wrench:")
-st.divider()
-st.subheader("About the tool")
-st.write("This tool is **NOT** offering financial advice **AT ALL**. It is a tool that aims to provide insights into the current London property market with a focus on analysing the different Boroughs within the city. The implementation of the Buy-To-Let Calculator is due to my personal interest of investing into property in the future and combining that with visuals and a LIVE data source provides me with a significant level of information for insights into potential investment areas. For the ***user***, it could also produce meaningful insights for you as well.")
-st.divider()
 df = pd.read_csv('data//UK-HPI-full-file-2024-06.csv')
-
 # List of London Boroughs
 london_boroughs = [
     'Barking and Dagenham', 'Barnet', 'Bexley', 'Brent',
@@ -51,20 +50,6 @@ london_boroughs = [
 # Borough Filter
 df_london = df[df['RegionName'].isin(london_boroughs)].copy()
 df_london['Date'] = pd.to_datetime(df_london['Date'], format='%d/%m/%Y')
-
-
-# Sidebar Navigation
-st.sidebar.title("Navigation")
-sections = [
-    "Home",
-    "Property Prices & Sales Volume", 
-    "House Price Predictions", 
-    "Forecast Metrics", 
-    "Buy-To-Let Mortgage Calculator", 
-    "Average Rent & Map", 
-    "RightMove **LIVE** Rents Up for Sale",
-]
-selected_section = st.sidebar.radio("Go to:", sections)
 
 #GRAPHS FOR PROPERTY PRICES ACROSS 30 YEARS------------------------------------------------------------------------------------------------------------------------------
 # Section 1: Property Prices & Sales Volume
@@ -444,7 +429,19 @@ def show_rightmove_web_scraper():
     else:
         st.info("Enter a location and click search to see results.")
 
-# Content will be displayed depending on which section the user selects
+# Sidebar Navigation
+st.sidebar.title("Navigation")
+sections = [
+    "Home",
+    "Property Prices & Sales Volume", 
+    "House Price Predictions", 
+    "Forecast Metrics", 
+    "Buy-To-Let Mortgage Calculator", 
+    "Average Rent & Map", 
+    "RightMove **LIVE** Rent Listings",
+]
+selected_section = st.sidebar.radio("Go to:", sections)
+
 if selected_section == "Property Prices & Sales Volume":
     show_property_prices_sales_volume()
 elif selected_section == "House Price Predictions":
@@ -455,10 +452,11 @@ elif selected_section == "Buy-To-Let Mortgage Calculator":
     show_buy_to_let_mortgage_calculator()
 elif selected_section == "Average Rent & Map":
     show_average_rent()
-elif selected_section == "RightMove **LIVE** Rents Up for Sale":
+elif selected_section == "RightMove **LIVE** Rent Listings":
     show_rightmove_web_scraper()
 elif selected_section == "Home":
-    # Show all sections sequentially
+    show_home()
+    st.divider()
     show_property_prices_sales_volume()
     st.divider()
     show_house_price_predictions()
@@ -470,4 +468,4 @@ elif selected_section == "Home":
     show_average_rent()
     st.divider()
     show_rightmove_web_scraper()
-#WEB FEATURES SECTION (MAYBE)
+
