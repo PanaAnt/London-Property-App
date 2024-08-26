@@ -325,6 +325,7 @@ def show_average_rent():
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+import chromedriver_autoinstaller
 from webdriver_manager.chrome import ChromeDriverManager
 import streamlit as st
 import pandas as pd
@@ -340,8 +341,8 @@ chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 
 def get_driver():
-    # Corrected way to specify the version
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    chromedriver_autoinstaller.install()  # Automatically installs the correct version
+    driver = webdriver.Chrome(options=chrome_options)
     return driver
 
 def validate_link(driver, url):
