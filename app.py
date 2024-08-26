@@ -26,13 +26,6 @@ from prophet import Prophet
 
 #App 
 
-page_bg_img = '''
-<style>
-body {
-    background-color: #f0f0f0;  /* Light gray background */
-}
-</style>
-'''
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_colwidth', None)
@@ -145,7 +138,7 @@ def show_house_price_predictions():
 
 # Section 3: Forecast Metrics
 def show_forecast_metrics():
-    st.title("Forecast Metrics by Borough :1234:")
+    st.title("Forecast Metrics by Borough 📊")
     st.subheader("This section is for a more in-depth look at the performance of the 'prophet' forecasting model.")
 
     df_london = pd.read_csv('data//UK-HPI-full-file-2024-06.csv')
