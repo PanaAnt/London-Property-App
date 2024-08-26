@@ -26,14 +26,13 @@ from prophet import Prophet
 
 #App 
 
-
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_colwidth', None)
 pd.set_option('display.expand_frame_repr', False)
 def show_home():
     st.title("**London Property Tool**:house_with_garden::hammer_and_wrench:")
     st.divider()
-    st.subheader("About the tool")
+    st.subheader("⚠️ About the tool ⚠️")
     st.write("This tool is **NOT** offering financial advice **AT ALL**. It is a tool that aims to provide insights into the current London property market with a focus on analysing the different Boroughs within the city. The implementation of the Buy-To-Let Calculator is due to my personal interest of investing into property in the future and combining that with visuals and a LIVE data source provides me with a significant level of information for insights into potential investment areas. For the ***user***, it could also produce meaningful insights for you as well.")
 
 df = pd.read_csv('data//UK-HPI-full-file-2024-06.csv')
@@ -88,7 +87,7 @@ def show_property_prices_sales_volume():
     ax.grid(True)
     st.pyplot(fig)
 
-    st.subheader(f"Sales Volume in {borough}")
+    st.subheader(f"Sales Volume in {borough} (monthly)")
     fig, ax = plt.subplots(figsize=(20, 8))
     ax.plot(df_borough['Date'], df_borough['SalesVolume'], label='Sales Volume', color='steelblue', marker='o')
     ax.set_title(f"Sales Volume Trends in {borough}")
@@ -113,7 +112,8 @@ def show_house_price_predictions():
         'Redbridge', 'Richmond upon Thames', 'Southwark', 'Sutton', 'Tower Hamlets',
         'Waltham Forest', 'Wandsworth', 'City of Westminster'
     ]
-
+    st.info("Forecasted price trends for the next 3 years.")
+    st.info("Some of the graphs will scale in millions (1e6).")
     selected_borough = st.selectbox("Select a Borough", london_boroughs)
 
     borough_data = df[df['RegionName'] == selected_borough]
@@ -397,7 +397,7 @@ if 'valid' not in st.session_state:
 
 def show_rightmove_web_scraper():
     st.title("Rightmove ***LIVE*** Rent Listings :mag_right:")
-    location_input = st.text_input("Enter the London Borough you want to search (may take some time):")
+    location_input = st.text_input("Enter the London Borough you want to search:")
 
     if st.button("Search"):
         driver = get_driver()  # Initialize the driver here
@@ -409,7 +409,7 @@ def show_rightmove_web_scraper():
                 st.session_state['valid'] = validate_link(driver, f"https://www.rightmove.co.uk/property-to-rent/{st.session_state['location']}.html")
 
             if st.session_state['valid']:
-                with st.spinner("Extracting information, please wait..."):
+                with st.spinner("Extracting information, this may take some time please wait..."):
                     base_url = f"https://www.rightmove.co.uk/property-to-rent/{st.session_state['location']}.html"
 
                     if st.session_state['page_number'] >= 0:
@@ -446,7 +446,7 @@ def show_rightmove_web_scraper():
     elif st.session_state['valid'] is False:
         st.error("Invalid location or link. Please try again with a different location.")
     else:
-        st.info("Enter a location and click search to see results.")
+        st.info("Enter a location and click search to see results. If the location is not working, try typing it differently.")
 
 # Sidebar Navigation
 st.sidebar.title("Navigation")
