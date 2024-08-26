@@ -322,8 +322,18 @@ def show_average_rent():
 
 # Section 6: RightMove Web Scraper
 
-# Function to scrape data from a single page
-def validate_link(url):
+# Added chrome options so when the user inputs the borough, it runs in the background
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--window-size=1920x1080")
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+
+def get_driver():
+    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
+def validate_link(driver, url):
     driver.get(url)
     time.sleep(5)
     if "Sorry, we can't find the page you were looking for" in driver.page_source:
@@ -358,23 +368,8 @@ def scrape_page(soup):
 
     return rent_values, addresses, property_types, bedrooms
 
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-# Added chrome options so when the user inputs the borough, it runs in the background
-chrome_options = Options()
-chrome_options.add_argument("--headless")
-chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=1920x1080")
-chrome_options.add_argument("--no-sandbox")
-chrome_options.add_argument("--disable-dev-shm-usage")
-
-def get_driver():
-    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-
 if 'location' not in st.session_state:
-    st.session_state['location'] = "drivers//chromedriver.exe"
+    st.session_state['location'] = ""
 if 'data' not in st.session_state:
     st.session_state['data'] = pd.DataFrame()
 if 'page_number' not in st.session_state:
@@ -382,48 +377,50 @@ if 'page_number' not in st.session_state:
 if 'valid' not in st.session_state:
     st.session_state['valid'] = True
 
-
 def show_rightmove_web_scraper():
     st.title("Rightmove ***LIVE*** Rent Listings :mag_right:")
     location_input = st.text_input("Enter the London Borough you want to search (may take some time):")
 
     if st.button("Search"):
-        if location_input and location_input != st.session_state['location']:
-            st.session_state['location'] = location_input.strip()
-            st.session_state['data'] = pd.DataFrame()
-            st.session_state['page_number'] = 0
-            st.session_state['valid'] = validate_link(f"https://www.rightmove.co.uk/property-to-rent/{st.session_state['location']}.html")
+        driver = get_driver()  # Initialize the driver here
+        try:
+            if location_input and location_input != st.session_state['location']:
+                st.session_state['location'] = location_input.strip()
+                st.session_state['data'] = pd.DataFrame()
+                st.session_state['page_number'] = 0
+                st.session_state['valid'] = validate_link(driver, f"https://www.rightmove.co.uk/property-to-rent/{st.session_state['location']}.html")
 
-        if st.session_state['valid']:
-            with st.spinner("Extracting information, please wait..."):
-                base_url = f"https://www.rightmove.co.uk/property-to-rent/{st.session_state['location']}.html"
+            if st.session_state['valid']:
+                with st.spinner("Extracting information, please wait..."):
+                    base_url = f"https://www.rightmove.co.uk/property-to-rent/{st.session_state['location']}.html"
 
-                if st.session_state['page_number'] >= 0:
-                    while True:
-                        page_url = f"{base_url}?index={st.session_state['page_number'] * 24}"
-                        driver.get(page_url)
-                        time.sleep(1)
-                        page_source = driver.page_source
+                    if st.session_state['page_number'] >= 0:
+                        while True:
+                            page_url = f"{base_url}?index={st.session_state['page_number'] * 24}"
+                            driver.get(page_url)
+                            time.sleep(1)
+                            page_source = driver.page_source
 
-                        soup = BeautifulSoup(page_source, 'html.parser')
+                            soup = BeautifulSoup(page_source, 'html.parser')
 
-                        rent_values, addresses, property_types, bedrooms = scrape_page(soup)
+                            rent_values, addresses, property_types, bedrooms = scrape_page(soup)
 
-                        if not rent_values:
-                            st.session_state['page_number'] = -1
-                            break
+                            if not rent_values:
+                                st.session_state['page_number'] = -1
+                                break
 
-                        new_data = pd.DataFrame({
-                            'Rent': rent_values,
-                            'Address': addresses,
-                            'Property Type': property_types,
-                            'Bedrooms': bedrooms
-                        })
-                        st.session_state['data'] = pd.concat([st.session_state['data'], new_data], ignore_index=True)
+                            new_data = pd.DataFrame({
+                                'Rent': rent_values,
+                                'Address': addresses,
+                                'Property Type': property_types,
+                                'Bedrooms': bedrooms
+                            })
+                            st.session_state['data'] = pd.concat([st.session_state['data'], new_data], ignore_index=True)
 
-                        st.session_state['page_number'] += 1
+                            st.session_state['page_number'] += 1
 
-                driver.quit()
+        finally:
+            driver.quit()  # Ensure the driver is quit to release resources
 
     if not st.session_state['data'].empty:
         st.subheader(f"Table of Rents in {st.session_state['location']}")
