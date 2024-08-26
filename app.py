@@ -34,7 +34,7 @@ st.title(" **London Property Tool**:house_with_garden::hammer_and_wrench:")
 st.divider()
 st.subheader("About the tool")
 st.write("This tool is **NOT** offering financial advice **AT ALL**. It is a tool that aims to provide insights into the current London property market with a focus on analysing the different Boroughs within the city. The implementation of the Buy-To-Let Calculator is due to my personal interest of investing into property in the future and combining that with visuals and a LIVE data source provides me with a significant level of information for insights into potential investment areas. For the ***user***, it could also produce meaningful insights for you as well.")
-file = r"C:\Users\P-DTC1\Downloads\UK-HPI-full-file-2024-06.csv"
+file = "https://github.com/PanaAnt/London-Property-Web-App/blob/main/UK-HPI-full-file-2024-06.csv"
 df = pd.read_csv(file)
 
 # List of London Boroughs
@@ -81,7 +81,7 @@ def show_property_prices_sales_volume():
         'Waltham Forest', 'Wandsworth', 'City of Westminster'
     ]
 
-    df_london = pd.read_csv(r"C:\Users\P-DTC1\Downloads\UK-HPI-full-file-2024-06.csv")  # Load your dataset
+    df_london = pd.read_csv("https://github.com/PanaAnt/London-Property-Web-App/blob/main/UK-HPI-full-file-2024-06.csv")  # Load your dataset
     df_london['Date'] = pd.to_datetime(df_london['Date'], format='%d/%m/%Y')
 
     borough = st.selectbox("Select a London Borough:", london_boroughs)
@@ -117,7 +117,7 @@ def show_property_prices_sales_volume():
 def show_house_price_predictions():
     st.title("House Price Predictions 📈")
 
-    df = pd.read_csv(r"C:\Users\P-DTC1\Downloads\UK-HPI-full-file-2024-06.csv")
+    df = pd.read_csv("https://github.com/PanaAnt/London-Property-Web-App/blob/main/UK-HPI-full-file-2024-06.csv")
     df['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%Y')
 
     london_boroughs = [
@@ -157,8 +157,8 @@ def show_forecast_metrics():
     st.title("Forecast Metrics by Borough :1234:")
     st.subheader("This section is for a more in-depth look at the performance of the 'prophet' forecasting model.")
 
-    df_london = pd.read_csv(r"C:\Users\P-DTC1\Downloads\UK-HPI-full-file-2024-06.csv")
-    forecast_df = pd.read_csv(r"C:\Users\P-DTC1\Downloads\london_boroughs_forecast.csv")
+    df_london = pd.read_csv("https://github.com/PanaAnt/London-Property-Web-App/blob/main/UK-HPI-full-file-2024-06.csv")
+    forecast_df = pd.read_csv("https://github.com/PanaAnt/London-Property-Web-App/blob/main/london_boroughs_forecast.csv")
 
     df_london['Date'] = pd.to_datetime(df_london['Date'], format='%d/%m/%Y')
     forecast_df['ds'] = pd.to_datetime(forecast_df['ds'])
@@ -303,13 +303,13 @@ def show_average_rent():
     st.title("Average Rent across the London Boroughs in 2024")
     st.write("Courtesy of Zoopla, these are the current 2024 average rent prices by borough up to 2024 Q2.")
     
-    file = r"C:\Users\P-DTC1\Documents\Excel work\MonthlyRentLondon.csv"
+    file = 'https://github.com/PanaAnt/London-Property-Web-App/blob/main/London_Boroughs.geojson'
     data = pd.read_csv(file)
     data_clean = data[['Borough', 'Average Monthly Rent(£)', r'% change in the last 12 months']]
     st.dataframe(data_clean)
     
     # GEOSPATIAL MAP OF LONDON
-    csv_path = r"C:\Users\P-DTC1\Documents\Excel work\MonthlyRentLondon.csv"
+    csv_path = "https://github.com/PanaAnt/London-Property-Web-App/blob/main/MonthlyRentLondon.csv"
     rent_data = pd.read_csv(csv_path)
 
     # corrections
