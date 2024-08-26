@@ -372,10 +372,14 @@ def fetch_rightmove_data(location):
         rent = card.find('div', class_='propertyCard-rentalPrice-primary')
         if rent:
             rent_values.append(rent.text.strip())
+        else:
+            rent_values.append(None)  # Append None if no rent value is found
 
         address = card.find('address', class_='propertyCard-address')
         if address:
             addresses.append(address.get('title'))
+        else:
+            addresses.append(None)  # Append None if no address is found
         
         property_info = card.find('div', class_='property-information')
         if property_info:
@@ -387,7 +391,19 @@ def fetch_rightmove_data(location):
                 bedrooms.append(bedroom.find_next('span', class_='text').text)
             else:
                 bedrooms.append("N/A")
+        else:
+            property_types.append(None)  # Append None if no property type is found
+            bedrooms.append(None)        # Append None if no bedroom info is found
     
+    # Ensure all lists have the same length
+    max_length = max(len(rent_values), len(addresses), len(property_types), len(bedrooms))
+
+    # If any list is shorter, append None values to make them the same length
+    rent_values += [None] * (max_length - len(rent_values))
+    addresses += [None] * (max_length - len(addresses))
+    property_types += [None] * (max_length - len(property_types))
+    bedrooms += [None] * (max_length - len(bedrooms))
+
     data = pd.DataFrame({
         'Rent': rent_values,
         'Address': addresses,
