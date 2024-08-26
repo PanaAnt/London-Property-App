@@ -330,6 +330,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 import streamlit as st
 import pandas as pd
 import time
+import tempfile 
+import os
 from bs4 import BeautifulSoup
 
 # Chrome options setup
