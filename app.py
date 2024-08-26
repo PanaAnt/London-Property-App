@@ -34,6 +34,7 @@ st.title("**London Property Tool**:house_with_garden::hammer_and_wrench:")
 st.divider()
 st.subheader("About the tool")
 st.write("This tool is **NOT** offering financial advice **AT ALL**. It is a tool that aims to provide insights into the current London property market with a focus on analysing the different Boroughs within the city. The implementation of the Buy-To-Let Calculator is due to my personal interest of investing into property in the future and combining that with visuals and a LIVE data source provides me with a significant level of information for insights into potential investment areas. For the ***user***, it could also produce meaningful insights for you as well.")
+st.divider()
 df = pd.read_csv('data//UK-HPI-full-file-2024-06.csv')
 
 # List of London Boroughs
@@ -69,7 +70,6 @@ selected_section = st.sidebar.radio("Go to:", sections)
 # Section 1: Property Prices & Sales Volume
 def show_property_prices_sales_volume():
     st.title("London Borough Property-type: Prices & Sales Volume")
-    
     london_boroughs = [
         'Barking and Dagenham', 'Barnet', 'Bexley', 'Brent',
         'Bromley', 'Camden', 'Croydon', 'Ealing', 'Enfield', 'Greenwich',
@@ -111,7 +111,6 @@ def show_property_prices_sales_volume():
     ax.legend()
     ax.grid(True)
     st.pyplot(fig)
-
 # Section 2: House Price Predictions
 def show_house_price_predictions():
     st.title("House Price Predictions 📈")
@@ -174,33 +173,15 @@ def show_forecast_metrics():
         'MAE (in 1000s)': mae_by_borough
     })
 
-    st.warning("**-RMSE** (Root Mean Square Error) measures the average magnitude of the error between predicted and actual values, giving higher weight to larger errors due to squaring them before averaging.")
-    st.warning("**-MAE** (Mean Absolute Error) measures the average absolute difference between predicted and actual values, treating all errors equally without amplifying larger ones.")
+    st.info("**-RMSE** (Root Mean Square Error) measures the average magnitude of the error between predicted and actual values, giving higher weight to larger errors due to squaring them before averaging.")
+    st.info("**-MAE** (Mean Absolute Error) measures the average absolute difference between predicted and actual values, treating all errors equally without amplifying larger ones.")
 
     st.write("### RMSE and MAE by Borough Table")
     st.dataframe(metrics_by_borough)
 
-    #st.write("### RMSE and MAE Bar Charts")
-    #fig, axes = plt.subplots(2, 1, figsize=(8, 12))
-
-    #axes[0].bar(metrics_by_borough.index, metrics_by_borough["RMSE (in 1000s)"], color='skyblue')
-    #axes[0].set_title("RMSE by Borough")
-    #axes[0].set_xlabel("Borough")
-    #axes[0].set_ylabel("RMSE (in 1000s)")
-    #axes[0].tick_params(axis='x', rotation=90)
-
-    #axes[1].bar(metrics_by_borough.index, metrics_by_borough["MAE (in 1000s)"], color='orangered')
-    #axes[1].set_title("MAE by Borough")
-    #axes[1].set_xlabel("Borough")
-    #axes[1].set_ylabel("MAE (in 1000s)")
-    #axes[1].tick_params(axis='x', rotation=90)
-
-    #plt.tight_layout()
-    #st.pyplot(fig)
-
-        # Scatter plot: Actual vs Predicted Average Price
+    # Scatter plot: Actual vs Predicted Average Price
     st.write("### Actual vs Predicted Average Price")
-    st.warning("Actual vs. Predicted Plot: This scatter plot compares the actual AveragePrice with the predicted yhat (the 'prophet' ML model's price prediction). The red dashed line represents perfect predictions (where actual values equal predicted values). Points that are far from this line indicate larger prediction errors.")
+    st.info("Actual vs. Predicted Plot: This scatter plot compares the actual AveragePrice with the predicted yhat (the 'prophet' ML model's price prediction). The red dashed line represents perfect predictions (where actual values equal predicted values). Points that are far from this line indicate larger prediction errors.")
     plt.figure(figsize=(10, 6))
     plt.scatter(cleaned_df['AveragePrice'], cleaned_df['yhat'], alpha=0.5, color='blue')
     plt.plot([cleaned_df['AveragePrice'].min(), cleaned_df['AveragePrice'].max()],
@@ -214,7 +195,7 @@ def show_forecast_metrics():
 
     # Residual Analysis: Plotting Residuals (Actual - Predicted)
     st.write("### Residual Analysis")
-    st.warning("Residual Analysis: The histogram of residuals shows the distribution of errors (actual minus predicted). Ideally, residuals should be centered around zero which would indicate that the model's errors are mostly small and are equally likely to be positive or negative. There should also be no significant skewness/kurtosis or patterns and when there is none present, it means the model lacks systematic bias or extreme errors in its predictions.")
+    st.info("Residual Analysis: The histogram of residuals shows the distribution of errors (actual minus predicted). Ideally, residuals should be centered around zero which would indicate that the model's errors are mostly small and are equally likely to be positive or negative. There should also be no significant skewness/kurtosis or patterns and when there is none present, it means the model lacks systematic bias or extreme errors in its predictions.")
     residuals = cleaned_df['AveragePrice'] - cleaned_df['yhat']
     plt.figure(figsize=(10, 6))
     plt.hist(residuals, bins=50, edgecolor='black', alpha=0.7, color='green')
@@ -229,7 +210,7 @@ def show_forecast_metrics():
 def show_buy_to_let_mortgage_calculator():
     st.title("London Property Investment: Buy-To-Let :pound::handshake::house:")
     st.subheader("Mortgage Calculator :bank:")
-    st.warning("Note: The interest rate is fixed in the calculation but in the Uk, the interest rate is fixed for a set period of time typically 2 to 10 years. Therefore when reading the repayment value, take into account that this only shows what the investor would be repaying during the fixed period.")
+    st.info("Note: The interest rate is fixed in the calculation but in the Uk, the interest rate is fixed for a set period of time typically 2 to 10 years. Therefore when reading the repayment value, take into account that this only shows what the investor would be repaying during the fixed period.")
 
     def calculate_mortgage_payment(loan_amount, annual_interest_rate, loan_term_years):
         monthly_interest_rate = annual_interest_rate / 100 / 12
@@ -351,10 +332,11 @@ def show_average_rent():
     ).add_to(m)
 
     
-    st.title("London Boroughs: Average Monthly Rent")
+    st.title("London Boroughs: Average Monthly Rent :world_map:")
     folium_static(m)
 
 # Section 6: RightMove Web Scraper
+
 # Function to scrape data from a single page
 def validate_link(url):
     driver.get(url)
@@ -413,6 +395,7 @@ if 'valid' not in st.session_state:
 
 
 def show_rightmove_web_scraper():
+    st.title("Rightmove ***LIVE*** Rent Listings :mag_right:")
     location_input = st.text_input("Enter the London Borough you want to search (may take some time):")
 
     if st.button("Search"):
