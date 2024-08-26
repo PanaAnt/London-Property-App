@@ -340,7 +340,9 @@ chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 
 def get_driver():
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager(version="128.0.6613").install()), options=chrome_options)
+    # Corrected way to specify the version
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    return driver
 
 def validate_link(driver, url):
     driver.get(url)
