@@ -136,7 +136,6 @@ def show_house_price_predictions():
         st.pyplot(fig)
     else:
         st.write("No data available for the selected borough.")
-
 # Section 3: Forecast Metrics
 def show_forecast_metrics():
     st.title("Forecast Metrics by Borough 📊")
