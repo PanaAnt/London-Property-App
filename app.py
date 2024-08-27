@@ -164,7 +164,7 @@ def show_forecast_metrics():
 
     st.write("### RMSE and MAE by Borough Table")
     st.dataframe(metrics_by_borough)
-
+    
     # Scatter plot: Actual vs Predicted Average Price
     st.write("### Actual vs Predicted Average Price")
     st.info("Actual vs. Predicted Plot: This scatter plot compares the actual AveragePrice with the predicted yhat (the 'prophet' ML model's price prediction). The red dashed line represents perfect predictions (where actual values equal predicted values). Points that are far from this line indicate larger prediction errors.")
@@ -178,7 +178,12 @@ def show_forecast_metrics():
     plt.title('Actual vs Predicted Average Price')
     plt.grid(True)
     st.pyplot(plt)
-
+    total_absolute_error = abs(cleaned_df['AveragePrice'] - cleaned_df['yhat']).sum()
+    total_actual_sum = cleaned_df['AveragePrice'].sum()
+    accuracy = (1 - total_absolute_error / total_actual_sum) * 100
+    accuracy_rounded = round(accuracy, 2)
+    st.write(f"#### Actual vs. Predicted Accuracy: {accuracy_rounded}%")
+    
     # Residual Analysis: Plotting Residuals (Actual - Predicted)
     st.write("### Residual Analysis")
     st.info("Residual Analysis: The histogram of residuals shows the distribution of errors (actual minus predicted). Ideally, residuals should be centered around zero which would indicate that the model's errors are mostly small and are equally likely to be positive or negative. There should also be no significant skewness/kurtosis or patterns and when there is none present, it means the model lacks systematic bias or extreme errors in its predictions.")
