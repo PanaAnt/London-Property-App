@@ -1,0 +1,4 @@
+Metric,Scale Dependency,Sensitivity to Outliers,Interpretation,Use Case
+MAPE,Scale-Independent,Moderately Sensitive,Percentage Error,Comparing models across datasets; business forecasting
+MAE,Scale-Dependent,Less Sensitive,Absolute Error in original units,General regression problems
+RMSE,Scale-Dependent,Highly Sensitive,"Absolute Error in original units, penalizing larger errors",When large errors need to be heavily penalized; model training

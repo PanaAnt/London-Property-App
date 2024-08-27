@@ -153,15 +153,21 @@ def show_forecast_metrics():
 
     rmse_by_borough = cleaned_df.groupby('Borough').apply(lambda x: np.sqrt(mean_squared_error(x['AveragePrice'], x['yhat'])))
     mae_by_borough = cleaned_df.groupby('Borough').apply(lambda x: mean_absolute_error(x['AveragePrice'], x['yhat']))
+    mape_by_borough = cleaned_df.groupby('Borough').apply(lambda x: np.mean(np.abs((x['AveragePrice'] - x['yhat']) / x['AveragePrice']) * 100))
+
 
     metrics_by_borough = pd.DataFrame({
         'RMSE (in 1000s)': rmse_by_borough,
-        'MAE (in 1000s)': mae_by_borough
+        'MAE (in 1000s)': mae_by_borough,
+        'MAPE (%)': mape_by_borough
     })
 
+    
     st.info("**-RMSE** (Root Mean Square Error) measures the average magnitude of the error between predicted and actual values, giving higher weight to larger errors due to squaring them before averaging.")
     st.info("**-MAE** (Mean Absolute Error) measures the average absolute difference between predicted and actual values, treating all errors equally without amplifying larger ones.")
-
+    st.info("**-MAPE** (Mean Absolute Percentage Error) measures the accuracy as a percentage, showing the average percentage difference between the forecasted and actual values.")
+    summary_table_metrics = pd.read_csv("data//Table explaining metrics.csv")
+    st.dataframe(summary_table_metrics, width=1000, height=143)
     st.write("### RMSE and MAE by Borough Table")
     st.dataframe(metrics_by_borough)
     
