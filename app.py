@@ -132,6 +132,7 @@ def show_house_price_predictions():
         ax.set_title(f"Forecast for {selected_borough}")
         ax.set_xlabel("Year")
         ax.set_ylabel("Average Price (£)")
+        ax.legend()
         st.pyplot(fig)
     else:
         st.write("No data available for the selected borough.")
