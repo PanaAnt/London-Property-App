@@ -166,7 +166,7 @@ def show_forecast_metrics():
     st.info("**-RMSE** (Root Mean Square Error) measures the average magnitude of the error between predicted and actual values, giving higher weight to larger errors due to squaring them before averaging.")
     st.info("**-MAE** (Mean Absolute Error) measures the average absolute difference between predicted and actual values, treating all errors equally without amplifying larger ones.")
     st.info("**-MAPE** (Mean Absolute Percentage Error) measures the accuracy as a percentage, showing the average percentage difference between the forecasted and actual values.")
-    summary_table_metrics = pd.read_csv("data//Table explaining metrics.csv")
+    summary_table_metrics = pd.read_csv("data/Table explaining metrics.csv")
     st.dataframe(summary_table_metrics, width=1000, height=143)
     st.write("### RMSE and MAE by Borough Table")
     st.dataframe(metrics_by_borough)
